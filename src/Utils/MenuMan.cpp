@@ -1,11 +1,11 @@
 #include "MenuMan.h"
 
 /**
- * Função que vai ser invocada para criar cada menu
+ * Function that will be invoked to create each menu
  * Time-complexity -> O(n)
- * @param title Título do menu
- * @param options Opções do menu
- * @return n
+ * @param title menu title
+ * @param options menu options
+ * @return user selection (n)
  */
 
 int MenuMan::createMenu(string title, vector<string> options) {

@@ -2,7 +2,7 @@
 
 void displayMainMenu(){
     while (true){
-        int choice = MenuMan::createMenu("Selecione o que pretende fazer", {"Carregar Dados","Sair"});
+        int choice = MenuMan::createMenu("Select what you pretend to do: ", {"","Exit"});
         switch (choice) {
             case 1:
                 //TODO
@@ -10,12 +10,13 @@ void displayMainMenu(){
             case 2:
                 return;
             default:
-                cout << "Por favor, selecione uma opcao valida!" << endl;
+                cout << "Please, select a valid option!" << endl;
         }
     }
 }
 
 int main() {
+    //TODO read data
     displayMainMenu();
     return 0;
 }
