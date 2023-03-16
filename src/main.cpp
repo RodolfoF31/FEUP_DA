@@ -1,4 +1,5 @@
 #include "Utils/MenuMan.h"
+#include "Utils/FileMan.h"
 
 void displayMainMenu(){
     while (true){
@@ -16,7 +17,7 @@ void displayMainMenu(){
 }
 
 int main() {
-    //TODO read data
+    vector<Network> networks = FileMan::loadNetworks();
     displayMainMenu();
     return 0;
 }

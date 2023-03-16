@@ -3,12 +3,18 @@
 
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <vector>
+#include <iostream>
+#include "../Models/Network.h"
+#include "../Models/Station.h"
 
 using namespace std;
 
 class FileMan {
-    private:
-        static string fileToString(const string& filePath);
+public:
+        static vector<Network> loadNetworks();
+        static vector<Station> loadStations();
 };
 
 
