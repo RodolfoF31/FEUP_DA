@@ -3,15 +3,15 @@
 Network::Network(){
     station_A = "";
     station_B = "";
-    capacity = "";
+    capacity = 0;
     service = "";
 }
 
-Network::Network(string Station_A, string Station_B, int Capacity, string Service){
-    this->station_A = Station_A;
-    this->station_B = Station_B;
-    this->capacity = Capacity;
-    this->service = Service;
+Network::Network(string station_A, string station_B, int capacity, string service){
+    this->station_A = station_A;
+    this->station_B = station_B;
+    this->capacity = capacity;
+    this->service = service;
 }
 
 void Network::setStation_A(string s){
@@ -19,11 +19,11 @@ void Network::setStation_A(string s){
 }
 
 void Network::setStation_B(string s){
-    station_A = s;
+    station_B = s;
 }
 
-void Network::setCapacity(string s){
-    capacity = s;
+void Network::setCapacity(int c){
+    capacity = c;
 }
 
 void Network::setService(string s){
@@ -38,7 +38,7 @@ string Network::getStation_B(){
     return station_B;
 }
 
-string Network::getCapacity(){
+int Network::getCapacity(){
     return capacity;
 }
 

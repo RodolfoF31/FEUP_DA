@@ -18,6 +18,7 @@ void displayMainMenu(){
 
 int main() {
     vector<Network> networks = FileMan::loadNetworks();
+    vector<Station> stations = FileMan::loadStations();
     displayMainMenu();
     return 0;
 }

@@ -1,8 +1,9 @@
 #include "FileMan.h"
+#include <fstream>
+#include <sstream>
 
-static vector<Network> loadNetworks() {
-    Network anetwork;
-    vector <Network> networks;
+vector<Network> FileMan::loadNetworks() {
+    vector<Network> networks;
 
     ifstream network;
     network.open("../../dataset/network.csv");
@@ -10,31 +11,32 @@ static vector<Network> loadNetworks() {
     string line;
     getline(network, line); // Passar á frente a primeira linha
 
-    while (getline(network, line)) {
+    while(getline(network, line)) {
 
         string temp;
-        string number;
+        int capacity;
         stringstream input(line);
 
         getline(input, temp, ','); // Obter Station_A
-        anetwork.setStation_A(temp);
+        string station_A = temp;
         getline(input, temp, ','); // Obter Station_B
-        anetwork.setStation_B(temp);
-        getline(input, number, ','); // Obter Capacity
-        anetwork.setCapacity(number);
+        string station_B = temp;
+        getline(input, temp, ','); // Obter Capacity
+        capacity = stoi(temp);
         getline(input, temp, ','); // Obter Service
-        anetwork.setService(temp);
+        string service = temp;
+
+        Network anetwork(station_A, station_B, capacity, service);
         networks.push_back(anetwork);
     }
     return networks;
 }
 
-vector<Station> loadStations(){
-    Station astation;
+vector<Station> FileMan::loadStations(){
     vector<Station> stations;
 
     ifstream station;
-    station.open("stations.csv");
+    station.open("../../dataset/stations.csv");
 
     string line;
     getline(station, line); // Passar á frente a primeira linha
@@ -45,15 +47,17 @@ vector<Station> loadStations(){
         stringstream input(line);
 
         getline(input, temp, ','); // Obter Name
-        astation.setName(temp);
+        string name = temp;
         getline(input, temp, ','); // Obter District
-        astation.setDistrict(temp);
+        string district = temp;
         getline(input, temp, ','); // Obter Municipality
-        astation.setMunicipality(temp);
+        string municipality = temp;
         getline(input, temp, ','); // Obter Township
-        astation.setTownship(temp);
+        string township = temp;
         getline(input, temp, ','); // Obter Line
-        astation.setLine(temp);
+        string station_line = temp;
+
+        Station astation(name, district, municipality, township, station_line);
         stations.push_back(astation);
     }
     return stations;

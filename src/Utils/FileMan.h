@@ -2,8 +2,6 @@
 #define PROJETODA_FILEMAN_H
 
 #include <string>
-#include <fstream>
-#include <sstream>
 #include <vector>
 #include <iostream>
 #include "../Models/Network.h"

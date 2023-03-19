@@ -11,7 +11,7 @@ private:
 
     string station_A;
     string station_B;
-    string capacity;
+    int capacity;
     string service;
 
 public:
@@ -20,11 +20,11 @@ public:
     Network(string station_A, string station_B, int capacity, string service);
     void setStation_A(string s);
     void setStation_B(string s);
-    void setCapacity(string s);
+    void setCapacity(int c);
     void setService(string s);
     string getStation_A();
     string getStation_B();
-    string getCapacity();
+    int getCapacity();
     string getService();
 
 };
