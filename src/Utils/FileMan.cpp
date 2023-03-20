@@ -2,64 +2,65 @@
 #include <fstream>
 #include <sstream>
 
-vector<Network> FileMan::loadNetworks() {
+vector<Network> FileMan::loadNetworks(const std::string &filename) {
     vector<Network> networks;
 
-    ifstream network;
-    network.open("../../dataset/network.csv");
+    ifstream network(filename);
+    if(!network.is_open()){
+        cerr << "Error opening the file!" << endl;
+        return networks;
+    }
 
     string line;
-    getline(network, line); // Passar á frente a primeira linha
 
     while(getline(network, line)) {
 
         string temp;
+        string station_A, station_B, capacity_to_str, service_to_str;
         int capacity;
-        stringstream input(line);
+        ServiceType service;
+        istringstream input(line);
 
-        getline(input, temp, ','); // Obter Station_A
-        string station_A = temp;
-        getline(input, temp, ','); // Obter Station_B
-        string station_B = temp;
-        getline(input, temp, ','); // Obter Capacity
-        capacity = stoi(temp);
-        getline(input, temp, ','); // Obter Service
-        string service = temp;
+        getline(input, station_A, ','); // Obter Station_A
+        getline(input, station_B, ','); // Obter Station_B
+        getline(input, capacity_to_str, ','); // Obter Capacity
+        capacity = stoi(capacity_to_str);
+        getline(input, service_to_str, ','); // Obter Service
+        if(service_to_str == "STANDARD") service = ServiceType::STANDARD;
+        else service = ServiceType::ALFA_PENDULAR;
 
-        Network anetwork(station_A, station_B, capacity, service);
-        networks.push_back(anetwork);
+        networks.emplace_back(station_A,station_B,capacity,service);
     }
+    network.close();
     return networks;
 }
 
-vector<Station> FileMan::loadStations(){
+vector<Station> FileMan::loadStations(const std::string &filename){
     vector<Station> stations;
 
-    ifstream station;
-    station.open("../../dataset/stations.csv");
+    ifstream station(filename);
+    if(!station.is_open()){
+        cerr << "Error opening the file!" << endl;
+        return stations;
+    }
 
     string line;
     getline(station, line); // Passar á frente a primeira linha
 
     while(getline(station, line)){
 
-        string temp;
-        stringstream input(line);
+        string name,district, municipality, township, station_line;
+        istringstream input(line);
 
-        getline(input, temp, ','); // Obter Name
-        string name = temp;
-        getline(input, temp, ','); // Obter District
-        string district = temp;
-        getline(input, temp, ','); // Obter Municipality
-        string municipality = temp;
-        getline(input, temp, ','); // Obter Township
-        string township = temp;
-        getline(input, temp, ','); // Obter Line
-        string station_line = temp;
+        getline(input, name, ','); // Obter Name
+        getline(input, district, ','); // Obter District
+        getline(input, municipality, ','); // Obter Municipality
+        getline(input, township, ','); // Obter Township
+        getline(input, station_line, ','); // Obter Line
 
-        Station astation(name, district, municipality, township, station_line);
-        stations.push_back(astation);
+        stations.emplace_back(name, district, municipality, township, station_line);
     }
+    station.close();
     return stations;
 }
 

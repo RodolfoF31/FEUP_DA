@@ -5,6 +5,11 @@
 
 using namespace std;
 
+enum class ServiceType {
+    STANDARD,
+    ALFA_PENDULAR
+};
+
 class Network {
 
 private:
@@ -12,20 +17,20 @@ private:
     string station_A;
     string station_B;
     int capacity;
-    string service;
+    ServiceType service;
 
 public:
 
     Network();
-    Network(string station_A, string station_B, int capacity, string service);
+    Network(string station_A, string station_B, int capacity, ServiceType service);
     void setStation_A(string s);
     void setStation_B(string s);
     void setCapacity(int c);
-    void setService(string s);
+    void setService(ServiceType s);
     string getStation_A();
     string getStation_B();
     int getCapacity();
-    string getService();
+    ServiceType getService();
 
 };
 

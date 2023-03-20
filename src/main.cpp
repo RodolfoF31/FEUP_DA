@@ -17,8 +17,9 @@ void displayMainMenu(){
 }
 
 int main() {
-    vector<Network> networks = FileMan::loadNetworks();
-    vector<Station> stations = FileMan::loadStations();
+    vector<Station> stations = FileMan::loadStations("../dataset/stations.csv");
+    vector<Network> networks = FileMan::loadNetworks("../dataset/network.csv"); // stations.csv has an invalid capacity value somewhere
+    /*for(Network network: networks) cout << network.getCapacity();*/
     displayMainMenu();
     return 0;
 }

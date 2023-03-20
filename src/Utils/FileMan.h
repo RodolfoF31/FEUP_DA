@@ -11,8 +11,8 @@ using namespace std;
 
 class FileMan {
 public:
-        static vector<Network> loadNetworks();
-        static vector<Station> loadStations();
+        static vector<Network> loadNetworks(const std::string &filename);
+        static vector<Station> loadStations(const std::string &filename);
 };
 
 
