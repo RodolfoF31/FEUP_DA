@@ -36,7 +36,7 @@ void Station::setLine(string s){
     line = s;
 }
 
-string Station::getName(){
+string Station::getName() const{
     return name;
 }
 

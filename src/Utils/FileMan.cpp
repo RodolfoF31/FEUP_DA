@@ -12,6 +12,7 @@ vector<Network> FileMan::loadNetworks(const std::string &filename) {
     }
 
     string line;
+    getline(network, line); // Passar á frente a primeira linha
 
     while(getline(network, line)) {
 

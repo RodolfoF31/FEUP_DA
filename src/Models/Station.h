@@ -23,7 +23,7 @@ public:
     void setMunicipality(string s);
     void setTownship(string s);
     void setLine(string s);
-    string getName();
+    string getName() const;
     string getDistrict();
     string getMunicipality();
     string getTownship();

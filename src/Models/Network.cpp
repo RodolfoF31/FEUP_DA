@@ -4,7 +4,7 @@ Network::Network(){
     station_A = "";
     station_B = "";
     capacity = 0;
-    service = ServiceType::STANDARD; // change?
+    service = ServiceType::NO_SERVICE; // change?
 }
 
 Network::Network(string station_A, string station_B, int capacity, ServiceType service){
@@ -30,18 +30,18 @@ void Network::setService(ServiceType s){
     service = s;
 }
 
-string Network::getStation_A(){
+string Network::getStation_A() const{
     return station_A;
 }
 
-string Network::getStation_B(){
+string Network::getStation_B() const{
     return station_B;
 }
 
-int Network::getCapacity(){
+int Network::getCapacity() const{
     return capacity;
 }
 
-ServiceType Network::getService(){
+ServiceType Network::getService() const{
     return service;
 }

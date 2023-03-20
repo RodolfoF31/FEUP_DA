@@ -7,7 +7,8 @@ using namespace std;
 
 enum class ServiceType {
     STANDARD,
-    ALFA_PENDULAR
+    ALFA_PENDULAR,
+    NO_SERVICE
 };
 
 class Network {
@@ -27,10 +28,10 @@ public:
     void setStation_B(string s);
     void setCapacity(int c);
     void setService(ServiceType s);
-    string getStation_A();
-    string getStation_B();
-    int getCapacity();
-    ServiceType getService();
+    string getStation_A() const;
+    string getStation_B() const;
+    int getCapacity() const;
+    ServiceType getService() const;
 
 };
 
