@@ -2,13 +2,17 @@
 #define PROJETODA_FILEMAN_H
 
 #include <string>
-#include <fstream>
+#include <vector>
+#include <iostream>
+#include "../Models/Network.h"
+#include "../Models/Station.h"
 
 using namespace std;
 
 class FileMan {
-    private:
-        static string fileToString(const string& filePath);
+public:
+        static vector<Network> loadNetworks(const std::string &filename);
+        static vector<Station> loadStations(const std::string &filename);
 };
 
 
