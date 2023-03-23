@@ -9,8 +9,8 @@ using namespace std;
 
 class MenuMan {
     public:
-        static int createMenu(string title, vector<string> options);
+        static int createMenu(const string& title, vector<string> options);
 };
 
 
-#endif //PROJETODA_MENUMAN_H
+#endif

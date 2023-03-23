@@ -1,12 +1,6 @@
 #include "Station.h"
-Station::Station() {
-    name = "";
-    district = "";
-    municipality = "";
-    township = "";
-    line = "";
 
-}
+Station::Station() = default;
 
 Station::Station(string name, string district, string municipality, string township, string line){
     this->name = name;

@@ -3,7 +3,7 @@
 #include <limits>
 #include <iostream>
 
-Graph::Graph() {}
+Graph::Graph() = default;
 
 void Graph::addStation(const Station &station) {
     stations[station.getName()] = station;
@@ -44,7 +44,7 @@ ServiceType Graph::getNetworkService(const string &station_A, const string &stat
             }
         }
     }
-    return ServiceType::NO_SERVICE; // change?
+    return ServiceType::NO_SERVICE; //TODO change?
 }
 
 struct Node {
@@ -56,12 +56,23 @@ struct Node {
     }
 };
 
+/**
+ * Calculates the shortest path from a source station to a destination station using Dijkstra's algorithm.
+ * @param source The name of the source station.
+ * @param destination The name of the destination station.
+ */
+
 void Graph::dijkstra(const string& source, const string& destination) {
-    unordered_map<string, int> distances;
-    unordered_map<string, string> previous;
+    unordered_map<string, int> distances; // maps each node to its shortest distance from the source node
+    unordered_map<string, string> previous; // maps each node to its predecessor in the shortest path from the source node
     priority_queue<Node> queue;
 
-    for (const auto& station : stations) {
+    if (stations.count(source) == 0 || stations.count(destination) == 0) { // check if source and destination are valid stations
+        cout << "\nError: Invalid source or destination station" << endl;
+        return;
+    }
+
+    for (const auto& station : stations) { // all distances are initialized to infinity except source node
         distances[station.first] = numeric_limits<int>::max();
     }
 
@@ -72,7 +83,7 @@ void Graph::dijkstra(const string& source, const string& destination) {
         Node current = queue.top();
         queue.pop();
 
-        if (current.stationName == destination) {
+        if (current.stationName == destination) { // loop through queue removing the node with the smallest distance from the queue, if it is the destination break
             break;
         }
 
@@ -88,7 +99,7 @@ void Graph::dijkstra(const string& source, const string& destination) {
     }
 
     if (previous.count(destination) > 0) {
-        cout << "Shortest path: ";
+        cout << "\nShortest path: ";
         string currentNode = destination;
 
         while (currentNode != source) {
@@ -97,8 +108,8 @@ void Graph::dijkstra(const string& source, const string& destination) {
         }
 
         cout << source << endl;
-        cout << "Total distance: " << distances[destination] << endl;
+        cout << "\nTotal distance: " << distances[destination] << endl;
     } else {
-        cout << "No path found from " << source << " to " << destination << endl;
+        cout << "\nNo path found from " << source << " to " << destination << endl;
     }
 }
