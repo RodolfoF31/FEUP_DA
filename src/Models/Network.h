@@ -17,7 +17,7 @@ private:
 
     string station_A;
     string station_B;
-    int capacity;
+    int capacity{};
     ServiceType service;
 
 public:

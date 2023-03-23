@@ -1,11 +1,6 @@
 #include "Network.h"
 
-Network::Network(){
-    station_A = "";
-    station_B = "";
-    capacity = 0;
-    service = ServiceType::NO_SERVICE; // change?
-}
+Network::Network()= default;
 
 Network::Network(string station_A, string station_B, int capacity, ServiceType service){
     this->station_A = station_A;

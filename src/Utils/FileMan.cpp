@@ -20,7 +20,7 @@ vector<Network> FileMan::loadNetworks(const std::string &filename) {
         string station_A, station_B, capacity_to_str, service_to_str;
         int capacity;
         ServiceType service;
-        istringstream input(line);
+        istringstream input(line); // obter valores por cada linha
 
         getline(input, station_A, ','); // Obter Station_A
         getline(input, station_B, ','); // Obter Station_B
@@ -51,7 +51,7 @@ vector<Station> FileMan::loadStations(const std::string &filename){
     while(getline(station, line)){
 
         string name,district, municipality, township, station_line;
-        istringstream input(line);
+        istringstream input(line); // obter valores por cada linha
 
         getline(input, name, ','); // Obter Name
         getline(input, district, ','); // Obter District

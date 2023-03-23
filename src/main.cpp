@@ -4,16 +4,15 @@
 
 Graph graph;
 
-string source, destination; // change placement
-
 void displayMainMenu(){
     while (true){
         int choice = MenuMan::createMenu("\nSelect what you pretend to do: ", {"Find shortest path","Exit"});
+        string source, destination;
         switch (choice) {
             case 1:
-                cout << "Enter the source station name: ";
+                cout << "\nEnter the source station name: ";
                 cin >> source;
-                cout << "Enter the destination station name: ";
+                cout << "\nEnter the destination station name: ";
                 cin >> destination;
                 graph.dijkstra(source, destination);
                 break;
@@ -31,7 +30,6 @@ int main() {
 
     for(const Station& station : stations) graph.addStation(station);
     for(const Network& network : networks) graph.addNetwork(network);
-
 
     displayMainMenu();
     return 0;
