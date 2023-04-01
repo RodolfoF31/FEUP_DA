@@ -36,7 +36,7 @@ int Graph::getNetworkCapacity(const string &station_A, const string &station_B) 
     return -1;
 }
 
-ServiceType Graph::getNetworkService(const string &station_A, const string &station_B) const {
+ServiceType Graph::getNetworkService(const string &station_A, const string &station_B) const { // might be useful
     if(stationNetworks.count(station_A) > 0){
         for (const Network& network: stationNetworks.at(station_A)) {
             if(network.getStation_A() == station_B || network.getStation_B() == station_B){
@@ -112,4 +112,91 @@ void Graph::dijkstra(const string& source, const string& destination) {
     } else {
         cout << "\nNo path found from " << source << " to " << destination << endl;
     }
+}
+
+void Graph::setResidualCapacity(const string& station_A, const string& station_B, int flow) {
+    if (stationNetworks.count(station_A) > 0) {
+        for (Network& network : stationNetworks[station_A]) {
+            if (network.getStation_A() == station_B || network.getStation_B() == station_B) {
+                network.setCapacity(network.getCapacity() - flow);
+                return;
+            }
+        }
+    }
+
+    stationNetworks[station_A].emplace_back(station_A, station_B, flow, ServiceType::NO_SERVICE);
+}
+
+int Graph::getResidualCapacity(const string& station_A, const string& station_B) const {
+    if (stationNetworks.count(station_A) > 0) {
+        for (const Network& network : stationNetworks.at(station_A)) {
+            if (network.getStation_A() == station_B || network.getStation_B() == station_B) {
+                return network.getCapacity();
+            }
+        }
+    }
+    return 0;
+}
+
+int Graph::bfs(const std::string &source, const std::string &destination, unordered_map<std::string, std::string> &parent) {
+    unordered_map<string, bool> visited;
+    for(const auto& station: stations) visited[station.first];
+
+    queue<string> queue1;
+    queue1.push(source);
+    visited[source] = true;
+    parent[source] = "";
+
+    while (!queue1.empty()) {
+        string current = queue1.front();
+        queue1.pop();
+        vector<Station> adjacentStations = getAdjacentStations(current);
+
+        for (const Station& adjacentStation : adjacentStations) {
+            if (!visited[adjacentStation.getName()] && getNetworkCapacity(current, adjacentStation.getName()) > 0) {
+                parent[adjacentStation.getName()] = current;
+                visited[adjacentStation.getName()] = true;
+                queue1.push(adjacentStation.getName());
+
+                if (adjacentStation.getName() == destination) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+int Graph::maxFlow(const string& source, const string& destination) {
+    if (stations.count(source) == 0 || stations.count(destination) == 0) {
+        cout << "\nError: Invalid source or destination station" << endl;
+        return -1;
+    }
+
+    unordered_map<string, string> parent;
+    int max_flow = 0;
+
+    while (bfs(source, destination, parent)) {
+        int path_flow = numeric_limits<int>::max();
+        string currentNode = destination;
+
+        while (currentNode != source) {
+            string prevNode = parent[currentNode];
+            path_flow = min(path_flow, getResidualCapacity(prevNode, currentNode));
+            currentNode = prevNode;
+        }
+
+        currentNode = destination;
+        while (currentNode != source) {
+            string prevNode = parent[currentNode];
+            setResidualCapacity(prevNode, currentNode, path_flow);
+            setResidualCapacity(currentNode, prevNode, -path_flow);
+            currentNode = prevNode;
+        }
+
+        max_flow += path_flow;
+    }
+
+    return max_flow;
 }

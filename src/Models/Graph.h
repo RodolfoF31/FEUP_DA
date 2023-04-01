@@ -17,6 +17,10 @@ public:
     int getNetworkCapacity(const string& station_A, const string& station_B) const;
     ServiceType getNetworkService(const string& station_A, const string& station_B) const;
     void dijkstra(const string& source, const string& destination);
+    void setResidualCapacity(const string& station_A, const string& station_B, int flow);
+    int getResidualCapacity(const string& station_A, const string& station_B) const;
+    int bfs(const string& source, const string& destination, unordered_map<string, string>& parent);
+    int maxFlow(const string& source, const string& destination);
 private:
     unordered_map<string, Station> stations;
     unordered_map<string, vector<Network>> stationNetworks;
