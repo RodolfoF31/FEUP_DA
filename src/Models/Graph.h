@@ -21,10 +21,13 @@ public:
     int getResidualCapacity(const string& station_A, const string& station_B) const;
     int bfs(const string& source, const string& destination, unordered_map<string, string>& parent);
     int maxFlow(const string& source, const string& destination);
+    void findMostTrainsRequired();
+    int maxNumOfTrainsArrivingAt(const string& station);
 private:
     unordered_map<string, Station> stations;
     unordered_map<string, vector<Network>> stationNetworks;
+    unordered_map<string, unordered_map<string, int>> initialCapacities;
 };
 
 
-#endif //PROJETODA_GRAPH_H
+#endif
