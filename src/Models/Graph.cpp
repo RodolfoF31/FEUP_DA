@@ -12,6 +12,9 @@ void Graph::addStation(const Station &station) {
 void Graph::addNetwork(const Network &network) {
     stationNetworks[network.getStation_A()].push_back(network);
     stationNetworks[network.getStation_B()].push_back(network);
+
+    initialCapacities[network.getStation_A()][network.getStation_B()] = network.getCapacity();
+    initialCapacities[network.getStation_B()][network.getStation_A()] = network.getCapacity();
 }
 
 vector<Station> Graph::getAdjacentStations(const string &stationName) const {
@@ -142,21 +145,21 @@ int Graph::bfs(const std::string &source, const std::string &destination, unorde
     unordered_map<string, bool> visited;
     for(const auto& station: stations) visited[station.first];
 
-    queue<string> queue1;
-    queue1.push(source);
+    queue<string> q;
+    q.push(source);
     visited[source] = true;
-    parent[source] = "";
+    parent[source] = ""; // set an invalid parent
 
-    while (!queue1.empty()) {
-        string current = queue1.front();
-        queue1.pop();
+    while (!q.empty()) {
+        string current = q.front();
+        q.pop();
         vector<Station> adjacentStations = getAdjacentStations(current);
 
         for (const Station& adjacentStation : adjacentStations) {
             if (!visited[adjacentStation.getName()] && getNetworkCapacity(current, adjacentStation.getName()) > 0) {
                 parent[adjacentStation.getName()] = current;
                 visited[adjacentStation.getName()] = true;
-                queue1.push(adjacentStation.getName());
+                q.push(adjacentStation.getName());
 
                 if (adjacentStation.getName() == destination) {
                     return true;
@@ -178,25 +181,87 @@ int Graph::maxFlow(const string& source, const string& destination) {
     int max_flow = 0;
 
     while (bfs(source, destination, parent)) {
-        int path_flow = numeric_limits<int>::max();
+        int aug_flow = numeric_limits<int>::max(); // infinite
         string currentNode = destination;
 
+        // find the bottleneck capacity along the augmenting path
         while (currentNode != source) {
             string prevNode = parent[currentNode];
-            path_flow = min(path_flow, getResidualCapacity(prevNode, currentNode));
+            aug_flow = min(aug_flow, getResidualCapacity(prevNode, currentNode));
             currentNode = prevNode;
         }
 
+        // update the flow along the augmenting path
         currentNode = destination;
         while (currentNode != source) {
             string prevNode = parent[currentNode];
-            setResidualCapacity(prevNode, currentNode, path_flow);
-            setResidualCapacity(currentNode, prevNode, -path_flow);
+            setResidualCapacity(prevNode, currentNode, aug_flow);
+            setResidualCapacity(currentNode, prevNode, -aug_flow);
             currentNode = prevNode;
         }
 
-        max_flow += path_flow;
+        // add the augmenting flow to the total flow
+        max_flow += aug_flow;
     }
 
     return max_flow;
 }
+
+void Graph::findMostTrainsRequired() { //TODO fix complexity (it is taking more than 7 minutes to execute)
+    int maxTrains = 0;
+    vector<pair<string, string>> stationPairs;
+
+    for (const auto& source : stations) {
+        for (const auto& destination : stations) {
+            if (source.first != destination.first) {
+                int flow = maxFlow(source.first, destination.first);
+
+                for (auto& stationNetwork : stationNetworks) {
+                    for (Network& network : stationNetwork.second) {
+                        network.setCapacity(initialCapacities[network.getStation_A()][network.getStation_B()]);
+                    }
+                }
+
+                if (flow > maxTrains) {
+                    maxTrains = flow;
+                    stationPairs.clear();
+                    stationPairs.emplace_back(source.first, destination.first);
+                } else if (flow == maxTrains) {
+                    stationPairs.emplace_back(source.first, destination.first);
+                }
+            }
+        }
+    }
+
+    cout << "Maximum trains required: " << maxTrains << endl;
+    cout << "Station pairs:" << endl;
+    for (const auto& pair : stationPairs) {
+        cout << pair.first << " - " << pair.second << endl;
+    }
+}
+
+int Graph::maxNumOfTrainsArrivingAt(const string& station) {
+    if (stations.count(station) == 0) {
+        cout << "\nError: Invalid station" << endl;
+        return -1;
+    }
+
+    int maxNumOfTrains = 0;
+    for (const auto& source : stations) {
+        if (source.first != station) {
+            int flow = maxFlow(source.first, station);
+
+            for (auto& stationNetwork : stationNetworks) {
+                for (Network& network : stationNetwork.second) {
+                    network.setCapacity(initialCapacities[network.getStation_A()][network.getStation_B()]);
+                }
+            }
+
+            maxNumOfTrains += flow;
+        }
+    }
+
+    return maxNumOfTrains;
+}
+
+

@@ -7,10 +7,10 @@ Graph graph;
 
 void displayMainMenu(){
     while (true){
-        int choice = MenuMan::createMenu("\nSelect what you pretend to do: ", {"Find shortest path","Find maximum number of trains","Exit"});
-        string source, destination;
+        int choice = MenuMan::createMenu("\nSelect what you pretend to do: ", {"Find shortest path","Find maximum number of trains","Find station pairs with highest max flow","Find the maximum number of trains that can simultaneously arrive at a given station","Exit"});
+        string source, destination, maxTrainStation;
         int max_trains;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // clean input buffer
         switch (choice) {
             case 1:
                 cout << "\nEnter the source station name: ";
@@ -28,9 +28,17 @@ void displayMainMenu(){
                 if (max_trains != -1) cout << "\nMaximum number of trains that can simultaneously travel: " << max_trains << endl;
                 break;
             case 3:
+                graph.findMostTrainsRequired();
+                break;
+            case 4:
+                cout << "\nEnter the source station name: ";
+                getline(cin, maxTrainStation);
+                cout << "\nThe maximum number of trains that can simultaneously arrive at the station " << maxTrainStation << " is " << graph.maxNumOfTrainsArrivingAt(maxTrainStation) << "!\n";
+                break;
+            case 5:
                 return;
             default:
-                cout << "Please, select a valid option!" << endl;
+                cout << "\nPlease, select a valid option!" << endl;
         }
     }
 }
