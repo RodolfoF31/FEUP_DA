@@ -2,6 +2,7 @@
 #include <queue>
 #include <limits>
 #include <iostream>
+#include <algorithm>
 
 Graph::Graph() = default;
 
@@ -207,7 +208,7 @@ int Graph::maxFlow(const string& source, const string& destination) {
     return max_flow;
 }
 
-void Graph::findMostTrainsRequired() { //TODO fix complexity (it is taking more than 7 minutes to execute)
+void Graph::findMostTrainsRequired() {
     int maxTrains = 0;
     vector<pair<string, string>> stationPairs;
 
@@ -216,18 +217,17 @@ void Graph::findMostTrainsRequired() { //TODO fix complexity (it is taking more 
             if (source.first != destination.first) {
                 int flow = maxFlow(source.first, destination.first);
 
-                for (auto& stationNetwork : stationNetworks) {
-                    for (Network& network : stationNetwork.second) {
-                        network.setCapacity(initialCapacities[network.getStation_A()][network.getStation_B()]);
-                    }
-                }
-
                 if (flow > maxTrains) {
                     maxTrains = flow;
                     stationPairs.clear();
                     stationPairs.emplace_back(source.first, destination.first);
                 } else if (flow == maxTrains) {
                     stationPairs.emplace_back(source.first, destination.first);
+                }
+            }
+            for (auto& stationNetwork : stationNetworks) {
+                for (Network& network : stationNetwork.second) {
+                    network.setCapacity(initialCapacities[network.getStation_A()][network.getStation_B()]);
                 }
             }
         }
@@ -262,6 +262,49 @@ int Graph::maxNumOfTrainsArrivingAt(const string& station) {
     }
 
     return maxNumOfTrains;
+}
+
+void Graph::topTransportationNeeds(int k) {
+    if (k <= 0) {
+        cout << "\nPlease enter a number greater than 0";
+        return;
+    }
+    // Create a map to store the total maximum flow for each municipality and district
+    unordered_map<string, int> areas;
+
+    // Loop over all pairs of stations in the graph
+    for (auto it1 = stations.begin(); it1 != stations.end(); ++it1) {
+        for (auto it2 = stations.begin(); it2 != stations.end(); ++it2) {
+            if (it1 == it2) {
+                continue;
+            }
+            int max_flow = maxFlow(it1->first, it2->first);
+            string area1 = it1->second.getMunicipality() + "-" + it1->second.getDistrict();
+            string area2 = it2->second.getMunicipality() + "-" + it2->second.getDistrict();
+            if (areas.count(area1) == 0) {
+                areas[area1] = 0;
+            }
+            if (areas.count(area2) == 0) {
+                areas[area2] = 0;
+            }
+            areas[area1] += max_flow;
+            areas[area2] += max_flow;
+        }
+    }
+
+    // Create a vector of pairs to sort the areas by total maximum flow
+    vector<pair<string, int>> sorted_areas;
+    for (auto & area : areas) {
+        sorted_areas.emplace_back(area.first, area.second);
+    }
+    sort(sorted_areas.begin(), sorted_areas.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
+        return a.second > b.second;
+    });
+
+    // Print the top-k areas
+    for (int i = 0; i < k && i < sorted_areas.size(); ++i) {
+        cout << sorted_areas[i].first << ": " << sorted_areas[i].second << endl;
+    }
 }
 
 
