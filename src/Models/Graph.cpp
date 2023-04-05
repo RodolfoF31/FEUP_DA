@@ -48,7 +48,7 @@ ServiceType Graph::getNetworkService(const string &station_A, const string &stat
             }
         }
     }
-    return ServiceType::NO_SERVICE; //TODO change?
+    return ServiceType::NO_SERVICE;
 }
 
 struct Node {
@@ -62,6 +62,7 @@ struct Node {
 
 /**
  * Calculates the shortest path from a source station to a destination station using Dijkstra's algorithm.
+ * Time-complexity -> O((E + V) * log (V)) (where E is the number of edges and V is the number of vertices)
  * @param source The name of the source station.
  * @param destination The name of the destination station.
  */
@@ -142,9 +143,18 @@ int Graph::getResidualCapacity(const string& station_A, const string& station_B)
     return 0;
 }
 
-int Graph::bfs(const std::string &source, const std::string &destination, unordered_map<std::string, std::string> &parent) {
+/**
+ * BFS function to find a path between source and destination in the graph.
+ * Time-complexity -> O(V + E) (where V is the number of vertices and E is the number of edges)
+ * @param source the starting station as a string
+ * @param destination the destination station as a string
+ * @param parent an unordered_map that stores the parent of each station in the path (output parameter)
+ * @return true if a path between source and destination is found, false otherwise
+ */
+
+bool Graph::bfs(const std::string &source, const std::string &destination, unordered_map<std::string, std::string> &parent) {
     unordered_map<string, bool> visited;
-    for(const auto& station: stations) visited[station.first];
+    for(const auto& station: stations) visited[station.first] = false;
 
     queue<string> q;
     q.push(source);
@@ -172,7 +182,15 @@ int Graph::bfs(const std::string &source, const std::string &destination, unorde
     return false;
 }
 
-int Graph::maxFlow(const string& source, const string& destination) {
+/**
+ * Computes the maximum flow between the source and destination stations in the graph
+ * Time-complexity -> O(V * E^2) (where V is the number of vertices and E is the number of edges)
+ * @param source the starting station as a string
+ * @param destination the destination station as a string
+ * @return the maximum flow between source and destination stations or -1 in case of an error
+ */
+
+int Graph::maxFlow(const string& source, const string& destination) { // edmon-karp
     if (stations.count(source) == 0 || stations.count(destination) == 0) {
         cout << "\nError: Invalid source or destination station" << endl;
         return -1;
@@ -208,6 +226,13 @@ int Graph::maxFlow(const string& source, const string& destination) {
     return max_flow;
 }
 
+/**
+ * Finds the maximum number of trains required to support the flow between all pairs of stations in the graph.
+ * It also prints the station pairs that require the maximum number of trains.
+ *
+ * Time-complexity -> O(V^4 * E^2) (where V is the number of vertices and E is the number of edges)
+ */
+
 void Graph::findMostTrainsRequired() {
     int maxTrains = 0;
     vector<pair<string, string>> stationPairs;
@@ -240,6 +265,13 @@ void Graph::findMostTrainsRequired() {
     }
 }
 
+/**
+ * Calculates the maximum number of trains arriving at the specified station.
+ * Time-complexity -> O(V^2 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @param station
+ * @return the maximum number of trains arriving at the specified station or -1 in case of an error
+ */
+
 int Graph::maxNumOfTrainsArrivingAt(const string& station) {
     if (stations.count(station) == 0) {
         cout << "\nError: Invalid station" << endl;
@@ -263,6 +295,12 @@ int Graph::maxNumOfTrainsArrivingAt(const string& station) {
 
     return maxNumOfTrains;
 }
+
+/**
+ * Finds the top-k areas with the highest transportation needs, based on the total maximum flow between all pairs of stations in the graph.
+ * Time-complexity -> O(k + V^3 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @param k the number of top areas to display
+ */
 
 void Graph::topTransportationNeeds(int k) {
     if (k <= 0) {
