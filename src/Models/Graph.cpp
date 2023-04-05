@@ -61,8 +61,8 @@ struct Node {
 };
 
 /**
- * Calculates the shortest path from a source station to a destination station using Dijkstra's algorithm.
- * Time-complexity -> O((E + V) * log (V)) (where E is the number of edges and V is the number of vertices)
+ * @brief Calculates the shortest path from a source station to a destination station using Dijkstra's algorithm.
+ * @note Time-complexity -> O((E + V) * log (V)) (where E is the number of edges and V is the number of vertices)
  * @param source The name of the source station.
  * @param destination The name of the destination station.
  */
@@ -144,8 +144,8 @@ int Graph::getResidualCapacity(const string& station_A, const string& station_B)
 }
 
 /**
- * BFS function to find a path between source and destination in the graph.
- * Time-complexity -> O(V + E) (where V is the number of vertices and E is the number of edges)
+ * @briefBFS function to find a path between source and destination in the graph.
+ * @note Time-complexity -> O(V + E) (where V is the number of vertices and E is the number of edges)
  * @param source the starting station as a string
  * @param destination the destination station as a string
  * @param parent an unordered_map that stores the parent of each station in the path (output parameter)
@@ -183,14 +183,14 @@ bool Graph::bfs(const std::string &source, const std::string &destination, unord
 }
 
 /**
- * Computes the maximum flow between the source and destination stations in the graph
- * Time-complexity -> O(V * E^2) (where V is the number of vertices and E is the number of edges)
+ * @brief Computes the maximum flow between the source and destination stations in the graph
+ * @note Time-complexity -> O(V * E^2) (where V is the number of vertices and E is the number of edges)
  * @param source the starting station as a string
  * @param destination the destination station as a string
  * @return the maximum flow between source and destination stations or -1 in case of an error
  */
 
-int Graph::maxFlow(const string& source, const string& destination) { // edmon-karp
+int Graph::maxFlow(const string& source, const string& destination) { // edmon's-karp
     if (stations.count(source) == 0 || stations.count(destination) == 0) {
         cout << "\nError: Invalid source or destination station" << endl;
         return -1;
@@ -227,10 +227,10 @@ int Graph::maxFlow(const string& source, const string& destination) { // edmon-k
 }
 
 /**
- * Finds the maximum number of trains required to support the flow between all pairs of stations in the graph.
- * It also prints the station pairs that require the maximum number of trains.
+ * @brief Finds the maximum number of trains required to support the flow between all pairs of stations in the graph.
+ * @brief It also prints the station pairs that require the maximum number of trains.
  *
- * Time-complexity -> O(V^4 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @note Time-complexity -> O(V^4 * E^2) (where V is the number of vertices and E is the number of edges)
  */
 
 void Graph::findMostTrainsRequired() {
@@ -266,8 +266,8 @@ void Graph::findMostTrainsRequired() {
 }
 
 /**
- * Calculates the maximum number of trains arriving at the specified station.
- * Time-complexity -> O(V^2 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @brief Calculates the maximum number of trains arriving at the specified station.
+ * @note Time-complexity -> O(V^2 * E^2) (where V is the number of vertices and E is the number of edges)
  * @param station
  * @return the maximum number of trains arriving at the specified station or -1 in case of an error
  */
@@ -297,8 +297,8 @@ int Graph::maxNumOfTrainsArrivingAt(const string& station) {
 }
 
 /**
- * Finds the top-k areas with the highest transportation needs, based on the total maximum flow between all pairs of stations in the graph.
- * Time-complexity -> O(k + V^3 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @brief Finds the top-k areas with the highest transportation needs, based on the total maximum flow between all pairs of stations in the graph.
+ * @note Time-complexity -> O(k + V^3 * E^2) (where V is the number of vertices and E is the number of edges)
  * @param k the number of top areas to display
  */
 

@@ -3,8 +3,8 @@
 #include <sstream>
 
 /**
- * Loads the networks from a file with the given filename and returns them as a vector.
- * Time-complexity -> O(N)
+ * @brief Loads the networks from a file with the given filename and returns them as a vector.
+ * @note Time-complexity -> O(N)
  * @param filename
  * @return vector with all the networks
  */
@@ -44,8 +44,8 @@ vector<Network> FileMan::loadNetworks(const std::string &filename) {
 }
 
 /**
- * Loads the stations from a file with the given filename and returns them as a vector.
- * Time-complexity -> O(N)
+ * @brief Loads the stations from a file with the given filename and returns them as a vector.
+ * @note Time-complexity -> O(N)
  * @param filename
  * @return vector with all the stations
  */

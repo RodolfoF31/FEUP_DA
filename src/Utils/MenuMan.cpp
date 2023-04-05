@@ -1,8 +1,8 @@
 #include "MenuMan.h"
 
 /**
- * Function that will be invoked to create each menu
- * Time-complexity -> O(n)
+ * @brief Function that will be invoked to create each menu
+ * @note Time-complexity -> O(n)
  * @param title menu title
  * @param options menu options
  * @return user selection (n)
