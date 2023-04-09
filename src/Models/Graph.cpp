@@ -6,9 +6,21 @@
 
 Graph::Graph() = default;
 
+/**
+ * @brief Adds a station to the stations vector
+ * @note Time-Complexity -> O(1)
+ * @param station A station
+ */
+
 void Graph::addStation(const Station &station) {
     stations[station.getName()] = station;
 }
+
+/**
+ * @brief Adds a network to the network vector
+ * @note Time-Complexity -> O(1)
+ * @param network A network
+ */
 
 void Graph::addNetwork(const Network &network) {
     stationNetworks[network.getStation_A()].push_back(network);
@@ -17,6 +29,13 @@ void Graph::addNetwork(const Network &network) {
     initialCapacities[network.getStation_A()][network.getStation_B()] = network.getCapacity();
     initialCapacities[network.getStation_B()][network.getStation_A()] = network.getCapacity();
 }
+
+/**
+ * @brief Gets all the adjacent stations of a certain station
+ * @note Time-Complexity -> O(n) being n the size of the vector
+ * @param stationName name of the station
+ * @return vector of adjacent stations
+ */
 
 vector<Station> Graph::getAdjacentStations(const string &stationName) const {
     vector<Station> adjacentStations;
@@ -29,6 +48,14 @@ vector<Station> Graph::getAdjacentStations(const string &stationName) const {
     return adjacentStations;
 }
 
+/**
+ * @brief Gets the capacity of the network between two stations
+ * @note Time-Complexity -> O(n) being n the size of the vector
+ * @param station_A name of station A
+ * @param station_B name of station B
+ * @return capacity of the network
+ */
+
 int Graph::getNetworkCapacity(const string &station_A, const string &station_B) const {
     if(stationNetworks.count(station_A) > 0){
         for(const Network& network : stationNetworks.at(station_A)){
@@ -39,6 +66,14 @@ int Graph::getNetworkCapacity(const string &station_A, const string &station_B) 
     }
     return -1;
 }
+
+/**
+ * @brief Gets the service type of the network between two stations
+ * @note Time-Complexity -> O(n) being n the size of the vector
+ * @param station_A name of station A
+ * @param station_B name of station B
+ * @return service type of the network
+ */
 
 ServiceType Graph::getNetworkService(const string &station_A, const string &station_B) const { // might be useful
     if(stationNetworks.count(station_A) > 0){
@@ -119,6 +154,14 @@ void Graph::dijkstra(const string& source, const string& destination) {
     }
 }
 
+/**
+ * @brief Sets the residual capacity of a network between two stations
+ * @note Time-Complexity -> O(n) being n the size of the vector
+ * @param station_A name of station A
+ * @param station_B name of station B
+ * @param flow max flow between two stations
+ */
+
 void Graph::setResidualCapacity(const string& station_A, const string& station_B, int flow) {
     if (stationNetworks.count(station_A) > 0) {
         for (Network& network : stationNetworks[station_A]) {
@@ -131,6 +174,14 @@ void Graph::setResidualCapacity(const string& station_A, const string& station_B
 
     stationNetworks[station_A].emplace_back(station_A, station_B, flow, ServiceType::NO_SERVICE);
 }
+
+/**
+ * @brief Gets the residual capacity of a network between two stations
+ * @note Time-Complexity -> O(n) being n the size of the vector
+ * @param station_A name of station A
+ * @param station_B name of station B
+ * @return returns the residual capacity
+ */
 
 int Graph::getResidualCapacity(const string& station_A, const string& station_B) const {
     if (stationNetworks.count(station_A) > 0) {
@@ -152,13 +203,18 @@ int Graph::getResidualCapacity(const string& station_A, const string& station_B)
  * @return true if a path between source and destination is found, false otherwise
  */
 
-bool Graph::bfs(const std::string &source, const std::string &destination, unordered_map<std::string, std::string> &parent) {
+bool Graph::bfs(const string &source, const string &destination, unordered_map<string, string> &parent) {
     unordered_map<string, bool> visited;
-    for(const auto& station: stations) visited[station.first] = false;
+    unordered_map<string, int> distance;
+    for(const auto& station: stations){
+        visited[station.first] = false;
+        distance[station.first] = numeric_limits<int>::max();
+    }
 
     queue<string> q;
     q.push(source);
     visited[source] = true;
+    distance[source] = 0;
     parent[source] = ""; // set an invalid parent
 
     while (!q.empty()) {
@@ -167,9 +223,10 @@ bool Graph::bfs(const std::string &source, const std::string &destination, unord
         vector<Station> adjacentStations = getAdjacentStations(current);
 
         for (const Station& adjacentStation : adjacentStations) {
-            if (!visited[adjacentStation.getName()] && getNetworkCapacity(current, adjacentStation.getName()) > 0) {
+            if (!visited[adjacentStation.getName()] && getResidualCapacity(current, adjacentStation.getName()) > 0) {
                 parent[adjacentStation.getName()] = current;
                 visited[adjacentStation.getName()] = true;
+                distance[adjacentStation.getName()] = distance[current] + 1;
                 q.push(adjacentStation.getName());
 
                 if (adjacentStation.getName() == destination) {
@@ -229,7 +286,6 @@ int Graph::maxFlow(const string& source, const string& destination) { // edmon's
 /**
  * @brief Finds the maximum number of trains required to support the flow between all pairs of stations in the graph.
  * @brief It also prints the station pairs that require the maximum number of trains.
- *
  * @note Time-complexity -> O(V^4 * E^2) (where V is the number of vertices and E is the number of edges)
  */
 
@@ -258,10 +314,10 @@ void Graph::findMostTrainsRequired() {
         }
     }
 
-    cout << "Maximum trains required: " << maxTrains << endl;
-    cout << "Station pairs:" << endl;
+    cout << "\nMaximum trains required: " << maxTrains << endl;
+    cout << "\nStation pairs:\n" << endl;
     for (const auto& pair : stationPairs) {
-        cout << pair.first << " - " << pair.second << endl;
+        cout << pair.first << " and " << pair.second << " with "<<  maxTrains << " trains" << endl;
     }
 }
 
@@ -296,53 +352,105 @@ int Graph::maxNumOfTrainsArrivingAt(const string& station) {
     return maxNumOfTrains;
 }
 
-/**
- * @brief Finds the top-k areas with the highest transportation needs, based on the total maximum flow between all pairs of stations in the graph.
- * @note Time-complexity -> O(k + V^3 * E^2) (where V is the number of vertices and E is the number of edges)
- * @param k the number of top areas to display
- */
+void Graph::topTransportationNeedsDistrict(int k) {
+    unordered_map<string, int> districtFlow;
+    unordered_map<string, Station> remainingStations = stations;
 
-void Graph::topTransportationNeeds(int k) {
-    if (k <= 0) {
-        cout << "\nPlease enter a number greater than 0";
-        return;
-    }
-    // Create a map to store the total maximum flow for each municipality and district
-    unordered_map<string, int> areas;
-
-    // Loop over all pairs of stations in the graph
-    for (auto it1 = stations.begin(); it1 != stations.end(); ++it1) {
-        for (auto it2 = stations.begin(); it2 != stations.end(); ++it2) {
-            if (it1 == it2) {
-                continue;
-            }
-            int max_flow = maxFlow(it1->first, it2->first);
-            string area1 = it1->second.getMunicipality() + "-" + it1->second.getDistrict();
-            string area2 = it2->second.getMunicipality() + "-" + it2->second.getDistrict();
-            if (areas.count(area1) == 0) {
-                areas[area1] = 0;
-            }
-            if (areas.count(area2) == 0) {
-                areas[area2] = 0;
-            }
-            areas[area1] += max_flow;
-            areas[area2] += max_flow;
+    for (const auto& station: stations) {
+        remainingStations.erase(station.first);
+        for (const auto& station1: remainingStations) {
+            if (station.first == station1.first) continue;
+            if (station.second.getDistrict() != station1.second.getDistrict()) continue;
+            districtFlow[station.second.getDistrict()] += maxFlow(station.first, station1.first);
         }
     }
 
-    // Create a vector of pairs to sort the areas by total maximum flow
-    vector<pair<string, int>> sorted_areas;
-    for (auto & area : areas) {
-        sorted_areas.emplace_back(area.first, area.second);
-    }
-    sort(sorted_areas.begin(), sorted_areas.end(), [](const pair<string, int>& a, const pair<string, int>& b) {
-        return a.second > b.second;
-    });
+    for (int i = k; i > 0; i--) {
+        string maxDistrict;
+        int maxD = 0;
 
-    // Print the top-k areas
-    for (int i = 0; i < k && i < sorted_areas.size(); ++i) {
-        cout << sorted_areas[i].first << ": " << sorted_areas[i].second << endl;
+        for (const auto& district: districtFlow) {
+            if(district.second > maxD){
+                maxDistrict = district.first;
+                maxD = district.second;
+            }
+        }
+
+        cout << k - i + 1 << "- " << maxDistrict << " with " << maxD << " trains\n";
+        districtFlow.erase(maxDistrict);
     }
 }
+
+void Graph::topTransportationNeedsMunicipality(int k) {
+    unordered_map<string, int> municipalityFlow;
+    unordered_map<string, Station> remainingStations = stations;
+
+    for (const auto& station: stations) {
+        remainingStations.erase(station.first);
+        for (const auto& station1: remainingStations) {
+            if (station.first == station1.first) continue;
+            if (station.second.getMunicipality() != station1.second.getMunicipality()) continue;
+            municipalityFlow[station.second.getMunicipality()] += maxFlow(station.first, station1.first);
+        }
+    }
+
+    for (int i = k; i > 0; i--) {
+        string maxMunicipality;
+        int maxF = 0;
+
+        for (const auto& municipality: municipalityFlow) {
+            if(municipality.second > maxF){
+                maxMunicipality = municipality.first;
+                maxF = municipality.second;
+            }
+        }
+
+        cout << k - i + 1 << "- " << maxMunicipality << " with " << maxF << " trains\n";
+        municipalityFlow.erase(maxMunicipality);
+    }
+}
+
+Graph Graph::createReducedGraph(const Graph& graph, const string& line, int num) {
+    Graph reducedGraph;
+
+    for (const auto& stationEntry : graph.stations) {
+        const Station& station = stationEntry.second;
+        reducedGraph.addStation(station);
+    }
+
+    for (const auto& stationEntry : graph.stations) {
+        const string& stationName = stationEntry.first;
+        const Station& station = stationEntry.second;
+
+        auto stationNetworksIt = graph.stationNetworks.find(stationName);
+        if (stationNetworksIt == graph.stationNetworks.end()) {
+            continue;
+        }
+
+        for (const Network& network : stationNetworksIt->second) {
+            string adjacentStationName = (network.getStation_A() == stationName) ? network.getStation_B() : network.getStation_A();
+
+            auto adjStationIt = graph.stations.find(adjacentStationName);
+            if (adjStationIt == graph.stations.end()) {
+                continue;
+            }
+
+            const Station& adjStation = adjStationIt->second;
+            int capacity = network.getCapacity();
+            ServiceType service = network.getService();
+
+            if (station.getLine() == line && adjStation.getLine() == line) {
+                reducedGraph.addNetwork(Network(stationName, adjacentStationName, capacity - num, service));
+            }
+            else {
+                reducedGraph.addNetwork(Network(stationName, adjacentStationName, capacity, service));
+            }
+        }
+    }
+
+    return reducedGraph;
+}
+
+
 
 

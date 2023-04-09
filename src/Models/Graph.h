@@ -23,7 +23,9 @@ public:
     int maxFlow(const string& source, const string& destination);
     void findMostTrainsRequired();
     int maxNumOfTrainsArrivingAt(const string& station);
-    void topTransportationNeeds(int k);
+    void topTransportationNeedsDistrict(int k);
+    void topTransportationNeedsMunicipality(int k);
+    static Graph createReducedGraph(const Graph& graph, const string& line, int num);
 private:
     unordered_map<string, Station> stations;
     unordered_map<string, vector<Network>> stationNetworks;
