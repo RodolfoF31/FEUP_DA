@@ -19,11 +19,13 @@ public:
     void dijkstra(const string& source, const string& destination);
     void setResidualCapacity(const string& station_A, const string& station_B, int flow);
     int getResidualCapacity(const string& station_A, const string& station_B) const;
-    int bfs(const string& source, const string& destination, unordered_map<string, string>& parent);
+    bool bfs(const string& source, const string& destination, unordered_map<string, string>& parent);
     int maxFlow(const string& source, const string& destination);
     void findMostTrainsRequired();
     int maxNumOfTrainsArrivingAt(const string& station);
-    void topTransportationNeeds(int k);
+    void topTransportationNeedsDistrict(int k);
+    void topTransportationNeedsMunicipality(int k);
+    static Graph createReducedGraph(const Graph& graph, const string& line, int num);
 private:
     unordered_map<string, Station> stations;
     unordered_map<string, vector<Network>> stationNetworks;

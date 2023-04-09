@@ -24,10 +24,10 @@ public:
     void setTownship(string s);
     void setLine(string s);
     string getName() const;
-    string getDistrict();
-    string getMunicipality();
+    string getDistrict() const;
+    string getMunicipality() const;
     string getTownship();
-    string getLine();
+    const string& getLine() const;
 };
 
 

@@ -2,6 +2,13 @@
 #include <fstream>
 #include <sstream>
 
+/**
+ * @brief Loads the networks from a file with the given filename and returns them as a vector.
+ * @note Time-complexity -> O(N)
+ * @param filename
+ * @return vector with all the networks
+ */
+
 vector<Network> FileMan::loadNetworks(const std::string &filename) {
     vector<Network> networks;
 
@@ -12,7 +19,7 @@ vector<Network> FileMan::loadNetworks(const std::string &filename) {
     }
 
     string line;
-    getline(network, line); // Passar á frente a primeira linha
+    getline(network, line); // Advance first line
 
     while(getline(network, line)) {
 
@@ -20,13 +27,13 @@ vector<Network> FileMan::loadNetworks(const std::string &filename) {
         string station_A, station_B, capacity_to_str, service_to_str;
         int capacity;
         ServiceType service;
-        istringstream input(line); // obter valores por cada linha
+        istringstream input(line); // get values for each line
 
-        getline(input, station_A, ','); // Obter Station_A
-        getline(input, station_B, ','); // Obter Station_B
-        getline(input, capacity_to_str, ','); // Obter Capacity
+        getline(input, station_A, ','); // Get station_A
+        getline(input, station_B, ','); // Get station_B
+        getline(input, capacity_to_str, ','); // Get capacity
         capacity = stoi(capacity_to_str);
-        getline(input, service_to_str, ','); // Obter Service
+        getline(input, service_to_str, ','); // Get service
         if(service_to_str == "STANDARD") service = ServiceType::STANDARD;
         else service = ServiceType::ALFA_PENDULAR;
 
@@ -35,6 +42,13 @@ vector<Network> FileMan::loadNetworks(const std::string &filename) {
     network.close();
     return networks;
 }
+
+/**
+ * @brief Loads the stations from a file with the given filename and returns them as a vector.
+ * @note Time-complexity -> O(N)
+ * @param filename
+ * @return vector with all the stations
+ */
 
 vector<Station> FileMan::loadStations(const std::string &filename){
     vector<Station> stations;
@@ -46,18 +60,18 @@ vector<Station> FileMan::loadStations(const std::string &filename){
     }
 
     string line;
-    getline(station, line); // Passar á frente a primeira linha
+    getline(station, line); // Advance first line
 
     while(getline(station, line)){
 
         string name,district, municipality, township, station_line;
-        istringstream input(line); // obter valores por cada linha
+        istringstream input(line); // get values for each line
 
-        getline(input, name, ','); // Obter Name
-        getline(input, district, ','); // Obter District
-        getline(input, municipality, ','); // Obter Municipality
-        getline(input, township, ','); // Obter Township
-        getline(input, station_line, ','); // Obter Line
+        getline(input, name, ','); // Get name
+        getline(input, district, ','); // Get district
+        getline(input, municipality, ','); // Get municipality
+        getline(input, township, ','); // Get township
+        getline(input, station_line, ','); // Get line
 
         stations.emplace_back(name, district, municipality, township, station_line);
     }
