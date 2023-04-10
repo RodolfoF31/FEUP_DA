@@ -24,7 +24,7 @@ public:
     int maxNumOfTrainsArrivingAt(const string& station); // 2.4
     void topTransportationNeedsDistrict(int k); // 2.3
     void topTransportationNeedsMunicipality(int k); // 2.3
-    static Graph createReducedGraph(const Graph& graph, const string& line, int num); // 4.1
+    static Graph createSubGraph(const Graph& graph, const string& line, int num); // 4.1
     int maxFlowMinCost(const string& source, const string& destination); // 3.1
 private:
     unordered_map<string, Station> stations;
