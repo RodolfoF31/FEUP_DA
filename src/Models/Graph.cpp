@@ -68,74 +68,6 @@ int Graph::getNetworkCapacity(const string &station_A, const string &station_B) 
     return -1;
 }
 
-struct Node {
-    string stationName;
-    int distance;
-
-    bool operator<(const Node& other) const {
-        return distance > other.distance;
-    }
-};
-
-/**
- * @brief Calculates the shortest path from a source station to a destination station using Dijkstra's algorithm.
- * @note Time-complexity -> O((E + V) * log (V)) (where E is the number of edges and V is the number of vertices)
- * @param source The name of the source station.
- * @param destination The name of the destination station.
- */
-
-void Graph::dijkstra(const string& source, const string& destination) {
-    unordered_map<string, int> distances; // maps each node to its shortest distance from the source node
-    unordered_map<string, string> previous; // maps each node to its predecessor in the shortest path from the source node
-    priority_queue<Node> queue;
-
-    if (stations.count(source) == 0 || stations.count(destination) == 0) { // check if source and destination are valid stations
-        cout << "\nError: Invalid source or destination station" << endl;
-        return;
-    }
-
-    for (const auto& station : stations) { // all distances are initialized to infinity except source node
-        distances[station.first] = numeric_limits<int>::max();
-    }
-
-    distances[source] = 0;
-    queue.push({source, 0});
-
-    while (!queue.empty()) {
-        Node current = queue.top();
-        queue.pop();
-
-        if (current.stationName == destination) { // loop through queue removing the node with the smallest distance from the queue, if it is the destination break
-            break;
-        }
-
-        for (const Station& adjacentStation : getAdjacentStations(current.stationName)) {
-            int newDistance = distances[current.stationName] + getNetworkCapacity(current.stationName, adjacentStation.getName());
-
-            if (newDistance < distances[adjacentStation.getName()]) {
-                distances[adjacentStation.getName()] = newDistance;
-                previous[adjacentStation.getName()] = current.stationName;
-                queue.push({adjacentStation.getName(), newDistance});
-            }
-        }
-    }
-
-    if (previous.count(destination) > 0) {
-        cout << "\nShortest path: ";
-        string currentNode = destination;
-
-        while (currentNode != source) {
-            cout << currentNode << " <- ";
-            currentNode = previous[currentNode];
-        }
-
-        cout << source << endl;
-        cout << "\nTotal distance: " << distances[destination] << endl;
-    } else {
-        cout << "\nNo path found from " << source << " to " << destination << endl;
-    }
-}
-
 /**
  * @brief Sets the residual capacity of a network between two stations
  * @note Time-Complexity -> O(n) being n the size of the vector
@@ -404,7 +336,16 @@ void Graph::topTransportationNeedsMunicipality(int k) {
     }
 }
 
-Graph Graph::createReducedGraph(const Graph& graph, const string& line, int num) {
+/**
+ * @brief Creates a new sub graph based on a graph and a line with a different capacity. The reduced graph will have the same stations as the original graph but with updated network capacities
+ * @note Time-complexity -> O(V * E) (where V is the number of vertices and E is the number of edges)
+ * @param graph the existing graph to reduce
+ * @param line the line on which the reduction is being performed
+ * @param num the number of network capacities to reduce by
+ * @return a new sub graph with updated network capacities based on the given line and reduction number
+ */
+
+Graph Graph::createSubGraph(const Graph& graph, const string& line, int num) {
     Graph reducedGraph;
 
     for (const auto& stationEntry : graph.stations) {
@@ -444,6 +385,23 @@ Graph Graph::createReducedGraph(const Graph& graph, const string& line, int num)
 
     return reducedGraph;
 }
+
+struct Node {
+    string stationName;
+    int distance;
+
+    bool operator<(const Node& other) const {
+        return distance > other.distance;
+    }
+};
+
+/**
+ * @brief finds the maximum flow with minimum cost between the given source and destination stations using the min-cost max-flow algorithm
+ * @note Time-complexity -> O(V^2 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @param source the name of the source station
+ * @param destination the name of the destination station
+ * @return the maximum flow between the source and destination stations
+ */
 
 int Graph::maxFlowMinCost(const string& source, const string& destination) {
     int max_flow = 0;
