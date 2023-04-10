@@ -15,7 +15,6 @@ public:
     void addNetwork(const Network& network); // edge
     vector<Station> getAdjacentStations(const string& stationName) const;
     int getNetworkCapacity(const string& station_A, const string& station_B) const;
-    void dijkstra(const string& source, const string& destination);
     void setResidualCapacity(const string& station_A, const string& station_B, int flow);
     int getResidualCapacity(const string& station_A, const string& station_B) const;
     bool bfs(const string& source, const string& destination, unordered_map<string, string>& parent);
