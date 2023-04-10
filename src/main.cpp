@@ -5,6 +5,10 @@
 
 Graph graph;
 
+/**
+ * @brief Function used to display the menu with all the options for the reliability part
+ */
+
 void displayReliabilityMenu(){
     int choice = MenuMan::createMenu("\nSelect what you pretend to do: ",{"Maximum number of trains that can simultaneously travel between two specific stations in a network of reduced connectivity","Report on the stations that are the most affected by each segment failure"});
     int num, maxTrains;
@@ -37,33 +41,39 @@ void displayReliabilityMenu(){
             break;
         default:
             cout << "\nPlease, select a valid option!" << endl;
-            displayReliabilityMenu();
             break;
     }
 }
 
-void displayTopTransportation(){
-    int choice = MenuMan::createMenu("\nSelect what you pretend to do: ",{"Municipalities","Districts"});
+/**
+ * @brief Function used to display the menu with the options to choose if we want to do the top-k districts or municipalities
+ */
+
+void displayTopTransportation(){ //TODO fix prob with using this multiple times
+    int choice;
     int k;
-    switch (choice) {
-        case 1:
-            cout << "\nEnter the number of municipalities with the highest transportation needs: ";
-            cin >> k;
-            cout << "\nThe top " << k << " municipalities with the highest transportation needs are: \n";
-            graph.topTransportationNeedsDistrict(k);
-            break;
-        case 2:
-            cout << "\nEnter the number of districts with the highest transportation needs: ";
-            cin >> k;
-            cout << "\nThe top " << k << " districts with the highest transportation needs are: \n";
-            graph.topTransportationNeedsMunicipality(k);
-            break;
-        default:
-            cout << "\nPlease, select a valid option!" << endl;
-            displayTopTransportation();
-            break;
+    while (true) {
+        choice = MenuMan::createMenu("\nSelect what you pretend to do: ",{"Municipalities","Districts"});
+        switch (choice) {
+            case 1:
+                cout << "\nEnter the number of municipalities with the highest transportation needs: ";
+                cin >> k;
+                cout << "\nThe top " << k << " municipalities with the highest transportation needs are: \n";
+                graph.topTransportationNeedsDistrict(k);
+                return;
+            case 2:
+                cout << "\nEnter the number of districts with the highest transportation needs: ";
+                cin >> k;
+                cout << "\nThe top " << k << " districts with the highest transportation needs are: \n";
+                graph.topTransportationNeedsMunicipality(k);
+                return;
+            default:
+                cout << "\nPlease, select a valid option!" << endl;
+                break;
+        }
     }
 }
+
 
 /**
  * @brief Function used to display the menu with all the options
@@ -71,7 +81,7 @@ void displayTopTransportation(){
 
 void displayMainMenu(){
     while (true){
-        int choice = MenuMan::createMenu("\nSelect what you pretend to do: ", {"Find shortest path between 2 stations","Find maximum number of trains between 2 stations","Find station pairs with highest max flow","Top-k municipalities and districts, regarding transportation needs","Find the maximum number of trains that can simultaneously arrive at a given station","Reliability and Sensitivity to Line Failures","Exit"});
+        int choice = MenuMan::createMenu("\nSelect what you pretend to do: ", {"Find shortest path between 2 stations","Find maximum number of trains between 2 stations","Find station pairs with highest max flow","Top-k municipalities and districts, regarding transportation needs","Find the maximum number of trains that can simultaneously arrive at a given station","Calculate the maximum amount of trains that can simultaneously travel between two specific stations with minimum cost for the company","Reliability and Sensitivity to Line Failures","Exit"});
         string source, destination, maxTrainStation;
         int max_trains;
         cin.ignore(numeric_limits<streamsize>::max(), '\n'); // clean input buffer
@@ -103,9 +113,17 @@ void displayMainMenu(){
                 cout << "\nThe maximum number of trains that can simultaneously arrive at the station " << maxTrainStation << " is " << graph.maxNumOfTrainsArrivingAt(maxTrainStation) << "!\n";
                 break;
             case 6:
-                displayReliabilityMenu();
+                cout << "\nEnter the source station name: ";
+                getline(cin, source);
+                cout << "\nEnter the destination station name: ";
+                getline(cin, destination);
+                max_trains = graph.maxFlowMinCost(source, destination);
+                cout << "\nMaximum number of trains that can simultaneously travel with the minimum cost for the company: " << max_trains << endl;
                 break;
             case 7:
+                displayReliabilityMenu();
+                break;
+            case 8:
                 return;
             default:
                 cout << "\nPlease, select a valid option!" << endl;

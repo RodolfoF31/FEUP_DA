@@ -15,17 +15,17 @@ public:
     void addNetwork(const Network& network); // edge
     vector<Station> getAdjacentStations(const string& stationName) const;
     int getNetworkCapacity(const string& station_A, const string& station_B) const;
-    ServiceType getNetworkService(const string& station_A, const string& station_B) const;
     void dijkstra(const string& source, const string& destination);
     void setResidualCapacity(const string& station_A, const string& station_B, int flow);
     int getResidualCapacity(const string& station_A, const string& station_B) const;
     bool bfs(const string& source, const string& destination, unordered_map<string, string>& parent);
-    int maxFlow(const string& source, const string& destination);
-    void findMostTrainsRequired();
-    int maxNumOfTrainsArrivingAt(const string& station);
-    void topTransportationNeedsDistrict(int k);
-    void topTransportationNeedsMunicipality(int k);
-    static Graph createReducedGraph(const Graph& graph, const string& line, int num);
+    int maxFlow(const string& source, const string& destination); // 2.1
+    void findMostTrainsRequired(); // 2.2
+    int maxNumOfTrainsArrivingAt(const string& station); // 2.4
+    void topTransportationNeedsDistrict(int k); // 2.3
+    void topTransportationNeedsMunicipality(int k); // 2.3
+    static Graph createReducedGraph(const Graph& graph, const string& line, int num); // 4.1
+    int maxFlowMinCost(const string& source, const string& destination); // 3.1
 private:
     unordered_map<string, Station> stations;
     unordered_map<string, vector<Network>> stationNetworks;
