@@ -3,6 +3,7 @@
 #include <limits>
 #include <iostream>
 #include <algorithm>
+#include <climits>
 
 Graph::Graph() = default;
 
@@ -65,25 +66,6 @@ int Graph::getNetworkCapacity(const string &station_A, const string &station_B) 
         }
     }
     return -1;
-}
-
-/**
- * @brief Gets the service type of the network between two stations
- * @note Time-Complexity -> O(n) being n the size of the vector
- * @param station_A name of station A
- * @param station_B name of station B
- * @return service type of the network
- */
-
-ServiceType Graph::getNetworkService(const string &station_A, const string &station_B) const { // might be useful
-    if(stationNetworks.count(station_A) > 0){
-        for (const Network& network: stationNetworks.at(station_A)) {
-            if(network.getStation_A() == station_B || network.getStation_B() == station_B){
-                return network.getService();
-            }
-        }
-    }
-    return ServiceType::NO_SERVICE;
 }
 
 struct Node {
@@ -345,12 +327,18 @@ int Graph::maxNumOfTrainsArrivingAt(const string& station) {
                 }
             }
 
-            maxNumOfTrains += flow;
+            maxNumOfTrains = max(maxNumOfTrains, flow);
         }
     }
 
     return maxNumOfTrains;
 }
+
+/**
+ * @brief Calculates and outputs the k districts with the highest transportation needs, based on the maximum flow between pairs of stations within each district
+ * @note Time-complexity -> O(V^3 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @param k The number of top districts to display
+ */
 
 void Graph::topTransportationNeedsDistrict(int k) {
     unordered_map<string, int> districtFlow;
@@ -380,6 +368,12 @@ void Graph::topTransportationNeedsDistrict(int k) {
         districtFlow.erase(maxDistrict);
     }
 }
+
+/**
+ * @brief Calculates and outputs the k municipalities with the highest transportation needs, based on the maximum flow between pairs of stations within each municipality
+ * @note Time-complexity -> O(V^3 * E^2) (where V is the number of vertices and E is the number of edges)
+ * @param k The number of top municipalities to display
+ */
 
 void Graph::topTransportationNeedsMunicipality(int k) {
     unordered_map<string, int> municipalityFlow;
@@ -449,6 +443,105 @@ Graph Graph::createReducedGraph(const Graph& graph, const string& line, int num)
     }
 
     return reducedGraph;
+}
+
+int Graph::maxFlowMinCost(const string& source, const string& destination) {
+    int max_flow = 0;
+    int current_flow = 0;
+    bool use_standard = true;
+
+    unordered_map<string, int> distances; // maps each node to its shortest distance from the source node
+    unordered_map<string, string> previous; // maps each node to its predecessor in the shortest path from the source node
+    priority_queue<Node> queue;
+
+    if (stations.count(source) == 0 ||
+        stations.count(destination) == 0) { // check if source and destination are valid stations
+        cout << "\nError: Invalid source or destination station" << endl;
+    }
+
+    for (const auto &station: stations) { // all distances are initialized to infinity except source node
+        distances[station.first] = numeric_limits<int>::max();
+    }
+
+    distances[source] = 0;
+    queue.push({source, 0});
+
+    while (!queue.empty()) {
+        Node current = queue.top();
+        queue.pop();
+
+        if (current.stationName == destination) { // loop through queue removing the node with the smallest distance from the queue, if it is the destination break
+            break;
+        }
+
+        for (const Station &adjacentStation: getAdjacentStations(current.stationName)) {
+            int newDistance =
+                    distances[current.stationName] + getNetworkCapacity(current.stationName, adjacentStation.getName());
+
+            if (newDistance < distances[adjacentStation.getName()]) {
+                distances[adjacentStation.getName()] = newDistance;
+                previous[adjacentStation.getName()] = current.stationName;
+                queue.push({adjacentStation.getName(), newDistance});
+            }
+        }
+    }
+
+    while (bfs(source, destination, previous)) {
+        int bottleneck = INT_MAX;
+        for (string v = destination; v != source; v = previous[v]) {
+            string u = previous[v];
+            int residual_capacity;
+            if (use_standard) {
+                residual_capacity = getResidualCapacity(u, v);
+            } else {
+                residual_capacity = getResidualCapacity(v, u);
+            }
+            bottleneck = min(bottleneck, residual_capacity);
+        }
+        for (string v = destination; v != source; v = previous[v]) {
+            string u = previous[v];
+            if (use_standard) {
+                setResidualCapacity(u, v, getResidualCapacity(u, v) - bottleneck);
+                setResidualCapacity(v, u, getResidualCapacity(v, u) + bottleneck);
+            } else {
+                setResidualCapacity(v, u, getResidualCapacity(v, u) - bottleneck);
+                setResidualCapacity(u, v, getResidualCapacity(u, v) + bottleneck);
+            }
+        }
+        int cost = 0;
+        for (string v = destination; v != source; v = previous[v]) {
+            string u = previous[v];
+            int distance = distances[v] - distances[u];
+            if (use_standard) {
+                cost += distance * bottleneck * 2;
+            } else {
+                cost += distance * bottleneck * 4;
+            }
+        }
+        if (use_standard) {
+            current_flow += bottleneck;
+            max_flow += bottleneck;
+        } else {
+            max_flow += bottleneck * 2;
+        }
+        if (current_flow + bottleneck >= 3) {
+            use_standard = !use_standard;
+            current_flow = 0;
+        } else {
+            current_flow += bottleneck;
+        }
+    }
+
+    // Calculate the total cost for the allocated trains
+    int total_cost = 0;
+    for (string v = destination; v != source; v = previous[v]) {
+        string u = previous[v];
+        int distance = distances[v] - distances[u];
+        int flow = use_standard ? maxFlow(u, v) : maxFlow(v, u);
+        int cost = distance * flow;
+        total_cost += cost;
+    }
+    return max_flow;
 }
 
 
