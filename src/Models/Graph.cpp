@@ -346,11 +346,11 @@ void Graph::topTransportationNeedsMunicipality(int k) {
  */
 
 Graph Graph::createSubGraph(const Graph& graph, const string& line, int num) {
-    Graph reducedGraph;
+    Graph subGraph;
 
     for (const auto& stationEntry : graph.stations) {
         const Station& station = stationEntry.second;
-        reducedGraph.addStation(station);
+        subGraph.addStation(station);
     }
 
     for (const auto& stationEntry : graph.stations) {
@@ -375,15 +375,15 @@ Graph Graph::createSubGraph(const Graph& graph, const string& line, int num) {
             ServiceType service = network.getService();
 
             if (station.getLine() == line && adjStation.getLine() == line) {
-                reducedGraph.addNetwork(Network(stationName, adjacentStationName, capacity - num, service));
+                subGraph.addNetwork(Network(stationName, adjacentStationName, capacity - num, service));
             }
             else {
-                reducedGraph.addNetwork(Network(stationName, adjacentStationName, capacity, service));
+                subGraph.addNetwork(Network(stationName, adjacentStationName, capacity, service));
             }
         }
     }
 
-    return reducedGraph;
+    return subGraph;
 }
 
 struct Node {
